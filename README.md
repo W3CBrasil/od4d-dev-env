@@ -14,6 +14,12 @@ For more information about the project go to the main repository at [OD4D](https
 
 ### Configuring environment:
 
-* Run the command below and follow the instructions:
+* Go to project directory:
+ 
+		$ cd your_project_path (usually od4d-dev-env)
+
+* Execute the script to prepare your environment
 
 		$ ./go.sh
+
+* After execute the bash, follow the steps provided in command line.
