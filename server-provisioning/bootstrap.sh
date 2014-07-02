@@ -10,7 +10,9 @@ sudo chmod 600 /etc/apt/sources.list.d/passenger.list
 
 sudo apt-get update -y
 
-sudo apt-get install -y git
+sudo apt-get install -y git vim
+
+# install od4d.org and rss-to-turtle requirements
 
 sudo apt-get install -y curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev nodejs
 
@@ -28,6 +30,13 @@ sudo cp /vagrant/nginx-od4d-org /etc/nginx/sites-available/od4d-org
 sudo rm /etc/nginx/sites-enabled/default
 sudo ln -s /etc/nginx/sites-available/od4d-org /etc/nginx/sites-enabled/od4d-org
 
+# install semantic repository (fuseki) requirements
+
+sudo apt-get remove -y openjdk-6-jre
+sudo apt-get install -y openjdk-7-jre
+
+# create od4d user
+
 sudo useradd od4d
 
 PUB_KEY=$1
@@ -44,5 +53,7 @@ fi
 
 sudo mkdir /opt/od4d-org
 sudo chown od4d: /opt/od4d-org
+
+# restart od4d.org
 
 sudo service nginx restart
