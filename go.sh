@@ -9,6 +9,10 @@ echo "Downloading missing repositories..."
 
 pushd $REPOSITORIES_FOLDER &> /dev/null
 
+if [ ! -e "$REPOSITORIES_FOLDER/OD4D" ]; then
+  git clone git@github.com:W3CBrasil/OD4D
+fi
+
 if [ ! -e "$REPOSITORIES_FOLDER/od4d.org" ]; then
   git clone git@github.com:W3CBrasil/od4d.org.git
 fi
