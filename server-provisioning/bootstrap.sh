@@ -39,17 +39,23 @@ sudo apt-get install -y openjdk-7-jre
 
 sudo useradd od4d
 
+HOME_FOLDER="/home/od4d"
+GEM_FOLDER="$HOME/.gem"
+BASHRC="$HOME_FOLDER/.bashrc"
+sudo mkdir -p $GEM_FOLDER
+sudo sh -c 'echo '"'"'export GEM_PATH=$GEM_PATH:$HOME/.gem\nexport PATH=$PATH:$HOME/.gem/bin'"'" >> $BASHRC
+
 PUB_KEY=$1
 if [ "$PUB_KEY" != "" ]; then
-  HOME_FOLDER='/home/od4d'
   SSH_FOLDER="$HOME_FOLDER/.ssh"
   KEYS_FILE="$SSH_FOLDER/authorized_keys"
   sudo mkdir -p $SSH_FOLDER
   sudo sh -c "echo '$PUB_KEY' > $KEYS_FILE"
-  sudo chown -R od4d: $HOME_FOLDER
   sudo chmod 700 $SSH_FOLDER
   sudo chmod 600 $KEYS_FILE
 fi
+
+sudo chown -R od4d: $HOME_FOLDER
 
 sudo mkdir /opt/od4d-org
 sudo chown od4d: /opt/od4d-org
