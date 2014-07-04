@@ -36,10 +36,11 @@ sudo apt-get remove -y openjdk-6-jre
 sudo apt-get install -y openjdk-7-jre
 
 # create od4d user
+OD4D_USER=od4d
 
 sudo useradd od4d
 
-HOME_FOLDER="/home/od4d"
+HOME_FOLDER="/home/$OD4D_USER"
 GEM_FOLDER="$HOME/.gem"
 BASHRC="$HOME_FOLDER/.bashrc"
 sudo mkdir -p $GEM_FOLDER
@@ -55,11 +56,16 @@ if [ "$PUB_KEY" != "" ]; then
   sudo chmod 600 $KEYS_FILE
 fi
 
-sudo chown -R od4d: $HOME_FOLDER
+sudo chown -R $OD4D_USER: $HOME_FOLDER
 
-sudo mkdir /opt/od4d-org
-sudo chown od4d: /opt/od4d-org
+# create deploy and log folder
+DEPLOY_FOLDER=/opt/od4d
+sudo mkdir $DEPLOY_FOLDER
+sudo chown $OD4D_USER: $DEPLOY_FOLDER
+
+LOG_FOLDER=/var/log/od4d
+sudo mkdir $LOG_FOLDER
+sudo chown $OD4D_USER:adm $LOG_FOLDER
 
 # restart od4d.org
-
 sudo service nginx restart
