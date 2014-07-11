@@ -15,6 +15,7 @@ function create_dir {
 }
 
 function add_new_repositories_to_apt {
+  echo "Adding new apt repositories..."
   sudo apt-get update -y
   sudo apt-get install -y python-software-properties
   # Ruby repository
@@ -27,11 +28,14 @@ function add_new_repositories_to_apt {
   sudo chmod 600 /etc/apt/sources.list.d/passenger.list
   # Update apt
   sudo apt-get update -y
+  echo "Done adding new apt repositories."
 }
 
 function install_security_updates {
-  #sudo unattended-upgrades
-  echo "Security updates"
+  echo "Installing security updates..."
+  sudo unattended-upgrades
+  echo "Done installing security updates."
+
 }
 
 function install_requirements {
@@ -42,26 +46,34 @@ function install_requirements {
 }
 
 function install_ruby {
+  echo "Installing ruby..."
   sudo apt-get install -y ruby2.1 ruby2.1-dev
   sudo gem install bundler
+  echo "Done installing ruby."
 }
 
 function install_java {
+  echo "Installing java..."
   sudo apt-get remove -y openjdk-6-jre
   sudo apt-get install -y openjdk-7-jre
+  echo "Done installing java."
 }
 
 function install_web_server {
+  echo "Installing nginx and passenger..."
   sudo apt-get install -y nginx-full passenger
+  echo "Done installing nginx and passenger."
 }
 
 function configure_web_server {
+  echo "Configuring nginx and passenger..."
   sudo sed -i 's/# passenger_root/passenger_root/g' /etc/nginx/nginx.conf;
   sudo sed -i 's/# passenger_ruby/passenger_ruby/g' /etc/nginx/nginx.conf;
 
   sudo cp $BASE_DIR/nginx-od4d-org /etc/nginx/sites-available/od4d-org
   sudo rm /etc/nginx/sites-enabled/default
   sudo ln -s /etc/nginx/sites-available/od4d-org /etc/nginx/sites-enabled/od4d-org
+  echo "Done configuring nginx and passenger."
 }
 
 function restart_web_server {
@@ -95,19 +107,27 @@ function authorize_key {
 
 function create_user {
   THE_USER=$1
+
+  echo "Creating user '$THE_USER'..."
   sudo useradd $THE_USER
 
+  echo "Configuring user '$THE_USER'..."
   create_dir "/home/$THE_USER" $THE_USER
   configure_gems_dir $THE_USER
   authorize_key $THE_USER
+  echo "Done creating user '$THE_USER'"
 }
 
 function create_deploy_dir  {
+  echo "Creating deploy directory..."
   create_dir "/opt/od4d" $1
+  echo "Done creating deploy directory."
 }
 
 function create_log_dir  {
+  echo "Creating log directory..."
   create_dir "/var/log/od4d" $1
+  echo "Done creating log directory."
 }
 
 add_new_repositories_to_apt
