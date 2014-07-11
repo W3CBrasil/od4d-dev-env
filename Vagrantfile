@@ -15,9 +15,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node.vm.network "private_network", ip: "10.0.0.2"
 
     #forward port for rails
-    config.vm.network :forwarded_port, host: 3000, guest: 3000
+    node.vm.network :forwarded_port, host: 3000, guest: 3000
 
     node.vm.provision :shell, :path => "bootstrap.sh", privileged: false
+    node.vm.provision :copy_my_conf do |copy_conf|
+      copy_conf.git
+      copy_conf.vim
+    end
 
     node.vm.provider "virtualbox" do |vb|
       vb.name = "od4d-dev-env"
