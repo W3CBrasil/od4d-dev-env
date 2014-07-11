@@ -2,7 +2,7 @@
 
 PUB_KEY=$1
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-[ "$LOGNAME" == "vagrant" ] && BASE_DIR="/vagrant"
+[ "$LOGNAME" == "vagrant" ] && BASE_DIR="/vagrant/server-provisioning"
 
 function create_dir {
   DIR=$1

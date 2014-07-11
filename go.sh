@@ -29,6 +29,14 @@ popd &> /dev/null
 
 echo "Done dowloading repositories."
 
+echo "Installing required vagrant plugins..."
+
+vagrant plugin install vagrant-cachier
+vagrant plugin install vagrant-hostmanager
+vagrant plugin install copy_my_conf
+
+echo "Vagrant plugins installed."
+
 echo "Starting development environment..."
 
 vagrant up
