@@ -22,7 +22,7 @@ function add_new_repositories_to_apt {
   sudo add-apt-repository -y ppa:brightbox/ruby-ng
   # Passanger repository
   sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
-  sudo apt-get install apt-transport-https ca-certificates
+  sudo apt-get install -y apt-transport-https ca-certificates
   sudo sh -c 'echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main" > /etc/apt/sources.list.d/passenger.list'
   sudo chown root: /etc/apt/sources.list.d/passenger.list
   sudo chmod 600 /etc/apt/sources.list.d/passenger.list
@@ -40,9 +40,9 @@ function install_security_updates {
 
 function install_requirements {
   # git is need for deployment with capistrano
-  # rails requirements nodejs (for execjs), libsqlite3-dev
-  sudo apt-get install -y git nodejs libsqlite3-dev
-    #curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
+  # rails requirements build-essential, nodejs (for execjs), libsqlite3-dev
+  sudo apt-get install -y git nodejs build-essential libsqlite3-dev
+    #curl zlib1g-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
 }
 
 function install_ruby {
@@ -92,17 +92,16 @@ function configure_gems_dir {
 function authorize_key {
   if [ "$PUB_KEY" == "" ]; then
     echo "No public key provided"
-    exit 0
+  else
+    THE_USER=$1
+
+    SSH_FOLDER="/home/$THE_USER/.ssh"
+    create_dir $SSH_FOLDER $THE_USER "700"
+
+    KEYS_FILE="$SSH_FOLDER/authorized_keys"
+    sudo su $THE_USER -c "echo '$PUB_KEY' > $KEYS_FILE"
+    sudo su $THE_USER -c "chmod 600 $KEYS_FILE"
   fi
-
-  THE_USER=$1
-
-  SSH_FOLDER="/home/$THE_USER/.ssh"
-  create_dir $SSH_FOLDER $THE_USER "700"
-
-  KEYS_FILE="$SSH_FOLDER/authorized_keys"
-  sudo su $THE_USER -c "echo '$PUB_KEY' > $KEYS_FILE"
-  sudo su $THE_USER -c "chmod 600 $KEYS_FILE"
 }
 
 function create_user {
@@ -130,6 +129,7 @@ function create_log_dir  {
   echo "Done creating log directory."
 }
 
+echo "Configuring app server..."
 add_new_repositories_to_apt
 install_security_updates
 install_requirements
@@ -141,3 +141,4 @@ create_user "od4d"
 create_deploy_dir "od4d"
 create_log_dir "od4d"
 restart_web_server
+echo "Done configuring app server."
