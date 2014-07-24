@@ -14,16 +14,44 @@ For more information about the project go to the main repository at [OD4D](https
 
 ### Configuring environment:
 
-* Go to project directory:
- 
-		$ cd your_project_path (usually od4d-dev-env)
+* Clone this repository
+
+		$ git clone git@github.com:W3CBrasil/od4d-dev-env.git	
 
 * Execute the script to prepare your environment
 
+		$ cd od4d-dev-env
 		$ ./go.sh
+		
+	This script will perform the following tasks:
+	1. Clone all relevant git repositories to the "repositories" directory
+	1. Install required vagrant plugins
+	1. Create one virtual machine for development and one virtual machine for testing
+	
+* Log in to the development virtual machine
 
-* After execute the bash, follow the steps provided in command line.
+		$ vagrant ssh
+	
+	You will be able to find the git repositories in the "/projects" directory
+	
+* Deploy localy the semantic repository and the rss-to-turtle converter
 
+		$ cd /project/semantic-repository
+		$ rake deploy:local
+		$ cd /project/rss-to-turtle
+		$ rake deploy:local
+		
+* Load data into semantic repository using rss-to-turtle converter
+
+		$ insert_static_datasets
+		$ fetch-and-load-articles
+		
+* Start the web app in development mode
+
+		$ cd /project/od4d.org
+		$ rails server
+		
+* Now you will be able to access the web app in your browser using the url [http://localhost:3000](http://localhost:3000)
 
 
 ## Licence
