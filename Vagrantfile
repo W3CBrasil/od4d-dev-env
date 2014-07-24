@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     #forward port for rails
     node.vm.network :forwarded_port, host: 3000, guest: 3000
 
-    node.vm.provision :shell, :path => "bootstrap.sh", privileged: false
+    node.vm.provision :shell, :path => "dev-machine-scripts/bootstrap.sh", privileged: false
     node.vm.provision :copy_my_conf do |copy_conf|
       copy_conf.git
       copy_conf.vim
@@ -44,7 +44,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     id_rsa_ssh_key_pub = File.read(File.join(Dir.home, ".ssh", "id_rsa.pub"))
     node.vm.provision :shell do |s|
-      s.path = "server-provisioning/bootstrap.sh"
+      s.path = "app-server-scripts/bootstrap.sh"
       s.args = "\"#{id_rsa_ssh_key_pub}\""
       s.privileged = false
     end
