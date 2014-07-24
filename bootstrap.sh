@@ -21,3 +21,6 @@ done
 
 # remove uneeded packages
 sudo apt-get autoremove -y
+
+# make sure we don't ask confirmation to deploy localy
+echo -e "\nHost app-server.dev\n\tUserKnownHostsFile /dev/null\n\tStrictHostKeyChecking no" > $HOME/.ssh/config

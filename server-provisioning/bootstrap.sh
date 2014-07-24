@@ -14,6 +14,12 @@ function create_dir {
   [ "$PERMISSION" != "" ] && sudo chmod $PERMISSION $DIR
 }
 
+function run_command_as {
+  THE_USER=$1
+  COMMAND=$2
+  sudo su $THE_USER -c "$COMMAND"
+}
+
 function add_new_repositories_to_apt {
   echo "Adding new apt repositories..."
   sudo apt-get update -y
@@ -82,11 +88,11 @@ function restart_web_server {
 
 function configure_gems_dir {
   THE_USER=$1
-  THE_USER="od4d"
   USER_HOME="/home/$THE_USER"
-  create_dir "$USER_HOME/.gem" $THE_USER
 
-  sudo su $THE_USER -c "echo -e '"'export GEM_PATH=$GEM_PATH:$HOME/.gem\nexport PATH=$PATH:$HOME/.gem/bin'"' >> $USER_HOME/.bashrc"
+  create_dir "$USER_HOME/.gem" $THE_USER
+  run_command_as $THE_USER "echo -e '"'export GEM_PATH=$GEM_PATH:$HOME/.gem\nexport PATH=$PATH:$HOME/.gem/bin'"' > $USER_HOME/.bashrc"
+  run_command_as $THE_USER "echo -e '"'if [ -f ~/.bashrc ]; then\n\t. ~/.bashrc\nfi'"' > $USER_HOME/.ssh/rc"
 }
 
 function authorize_key {
@@ -99,8 +105,8 @@ function authorize_key {
     create_dir $SSH_FOLDER $THE_USER "700"
 
     KEYS_FILE="$SSH_FOLDER/authorized_keys"
-    sudo su $THE_USER -c "echo '$PUB_KEY' > $KEYS_FILE"
-    sudo su $THE_USER -c "chmod 600 $KEYS_FILE"
+    run_command_as $THE_USER "echo '$PUB_KEY' > $KEYS_FILE"
+    run_command_as $THE_USER "chmod 600 $KEYS_FILE"
   fi
 }
 
@@ -112,8 +118,8 @@ function create_user {
 
   echo "Configuring user '$THE_USER'..."
   create_dir "/home/$THE_USER" $THE_USER
-  configure_gems_dir $THE_USER
   authorize_key $THE_USER
+  configure_gems_dir $THE_USER
   echo "Done creating user '$THE_USER'"
 }
 
