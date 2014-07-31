@@ -7,37 +7,37 @@ function create_dir {
   OWNER=$2
   PERMISSION=$3
 
-  sudo mkdir -p $DIR
-  [ "$OWNER" != "" ] && sudo chown $OWNER: $DIR
-  [ "$PERMISSION" != "" ] && sudo chmod $PERMISSION $DIR
+  mkdir -p $DIR
+  [ "$OWNER" != "" ] && chown $OWNER: $DIR
+  [ "$PERMISSION" != "" ] && chmod $PERMISSION $DIR
 }
 
 function run_command_as {
   RUN_AS=$1
   COMMAND=$2
-  sudo su $RUN_AS -c "$COMMAND"
+  su $RUN_AS -c "$COMMAND"
 }
 
 function add_new_repositories_to_apt {
   echo "Adding new apt repositories..."
-  sudo apt-get update -y
-  sudo apt-get install -y python-software-properties
+  apt-get update -y
+  apt-get install -y python-software-properties
   # Ruby repository
-  sudo add-apt-repository -y ppa:brightbox/ruby-ng
+  add-apt-repository -y ppa:brightbox/ruby-ng
   # Passanger repository
-  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
-  sudo apt-get install -y apt-transport-https ca-certificates
-  sudo sh -c 'echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main" > /etc/apt/sources.list.d/passenger.list'
-  sudo chown root: /etc/apt/sources.list.d/passenger.list
-  sudo chmod 600 /etc/apt/sources.list.d/passenger.list
+  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
+  apt-get install -y apt-transport-https ca-certificates
+  sh -c 'echo "deb https://oss-binaries.phusionpassenger.com/apt/passenger trusty main" > /etc/apt/sources.list.d/passenger.list'
+  chown root: /etc/apt/sources.list.d/passenger.list
+  chmod 600 /etc/apt/sources.list.d/passenger.list
   # Update apt
-  sudo apt-get update -y
+  apt-get update -y
   echo "Done adding new apt repositories."
 }
 
 function install_security_updates {
   echo "Installing security updates..."
-  sudo unattended-upgrades
+  unattended-upgrades
   echo "Done installing security updates."
 
 }
@@ -45,26 +45,26 @@ function install_security_updates {
 function install_requirements {
   # git is need for deployment with capistrano
   # rails requirements build-essential, nodejs (for execjs), libsqlite3-dev
-  sudo apt-get install -y git nodejs build-essential libsqlite3-dev
+  apt-get install -y git nodejs build-essential libsqlite3-dev
 }
 
 function install_ruby {
   echo "Installing ruby..."
-  sudo apt-get install -y ruby2.1 ruby2.1-dev
-  sudo gem install bundler
+  apt-get install -y ruby2.1 ruby2.1-dev
+  gem install bundler
   echo "Done installing ruby."
 }
 
 function install_java {
   echo "Installing java..."
-  sudo apt-get remove -y openjdk-6-jre
-  sudo apt-get install -y openjdk-7-jre
+  apt-get remove -y openjdk-6-jre
+  apt-get install -y openjdk-7-jre
   echo "Done installing java."
 }
 
 function install_web_server {
   echo "Installing nginx and passenger..."
-  sudo apt-get install -y nginx-full passenger
+  apt-get install -y nginx-full passenger
   echo "Done installing nginx and passenger."
 }
 
@@ -72,19 +72,19 @@ function configure_web_server {
   echo "Configuring nginx and passenger..."
   APP_ENV=$1
 
-  sudo sed -i 's/# passenger_root/passenger_root/g' /etc/nginx/nginx.conf;
-  sudo sed -i 's/# passenger_ruby/passenger_ruby/g' /etc/nginx/nginx.conf;
+  sed -i 's/# passenger_root/passenger_root/g' /etc/nginx/nginx.conf;
+  sed -i 's/# passenger_ruby/passenger_ruby/g' /etc/nginx/nginx.conf;
 
-  sudo cp $BASE_DIR/nginx-od4d-org /etc/nginx/sites-available/od4d-org
-  sudo sed -i "s/{rails-env}/$APP_ENV/g" /etc/nginx/sites-available/od4d-org
+  cp $BASE_DIR/nginx-od4d-org /etc/nginx/sites-available/od4d-org
+  sed -i "s/{rails-env}/$APP_ENV/g" /etc/nginx/sites-available/od4d-org
 
-  sudo rm /etc/nginx/sites-enabled/default
-  sudo ln -s /etc/nginx/sites-available/od4d-org /etc/nginx/sites-enabled/od4d-org
+  rm /etc/nginx/sites-enabled/default
+  ln -s /etc/nginx/sites-available/od4d-org /etc/nginx/sites-enabled/od4d-org
   echo "Done configuring nginx and passenger."
 }
 
 function restart_web_server {
-  sudo service nginx restart
+  service nginx restart
 }
 
 function configure_gems_dir {
@@ -99,7 +99,7 @@ function create_user {
   THE_USER=$1
 
   echo "Creating user '$THE_USER'..."
-  sudo useradd $THE_USER
+  useradd $THE_USER
 
   echo "Configuring user '$THE_USER'..."
   create_dir "/home/$THE_USER" $THE_USER
@@ -133,6 +133,13 @@ function create_log_dir  {
   echo "Done creating log directory."
 }
 
+function verify_is_root {
+  if [ "$(whoami)" != "root" ]; then
+    echo "The bootstrap script needs to be executed as root."
+    exit 1
+  fi
+}
+
 function verify_parameters {
   if [ -z "$APP_ENV" ]; then
     echo "Please set the app environment using the 'APP_ENV' environment variable."
@@ -148,6 +155,7 @@ function verify_parameters {
 echo "Configuring app server..."
 
 OD4D_USER="od4d"
+verify_is_root
 verify_parameters
 
 add_new_repositories_to_apt
