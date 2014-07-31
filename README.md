@@ -87,7 +87,7 @@ To create a new server for staging or production you just need to follow these s
 		$ export KEY_TO_AUTHORIZE="{replace-this-with-the-public-key-of-the-key-pair-that-will-be-used-for-deployment}"
 		$ ./bootstrap.sh
 
-* Set in your deploy machine the environment variable 'OD4D_STAGING_SERVER' (or 'OD4D_PROD_SERVER') and deploy the app components:
+* In your deploy machine, set the environment variable 'OD4D_STAGING_SERVER' (or 'OD4D_PROD_SERVER') and deploy the app components:
 
 		$ cd semantic-repository
 		$ rake deploy:{replace-this-with-the-environment-name}
