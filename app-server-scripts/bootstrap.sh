@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-PUB_KEY=$1
 BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-[ "$LOGNAME" == "vagrant" ] && BASE_DIR="/vagrant/app-server-scripts"
 
 function create_dir {
   DIR=$1
@@ -15,9 +13,9 @@ function create_dir {
 }
 
 function run_command_as {
-  THE_USER=$1
+  RUN_AS=$1
   COMMAND=$2
-  sudo su $THE_USER -c "$COMMAND"
+  sudo su $RUN_AS -c "$COMMAND"
 }
 
 function add_new_repositories_to_apt {
@@ -48,7 +46,6 @@ function install_requirements {
   # git is need for deployment with capistrano
   # rails requirements build-essential, nodejs (for execjs), libsqlite3-dev
   sudo apt-get install -y git nodejs build-essential libsqlite3-dev
-    #curl zlib1g-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev
 }
 
 function install_ruby {
@@ -73,10 +70,14 @@ function install_web_server {
 
 function configure_web_server {
   echo "Configuring nginx and passenger..."
+  APP_ENV=$1
+
   sudo sed -i 's/# passenger_root/passenger_root/g' /etc/nginx/nginx.conf;
   sudo sed -i 's/# passenger_ruby/passenger_ruby/g' /etc/nginx/nginx.conf;
 
   sudo cp $BASE_DIR/nginx-od4d-org /etc/nginx/sites-available/od4d-org
+  sudo sed -i "s/{rails-env}/$APP_ENV/g" /etc/nginx/sites-available/od4d-org
+
   sudo rm /etc/nginx/sites-enabled/default
   sudo ln -s /etc/nginx/sites-available/od4d-org /etc/nginx/sites-enabled/od4d-org
   echo "Done configuring nginx and passenger."
@@ -92,22 +93,6 @@ function configure_gems_dir {
 
   create_dir "$USER_HOME/.gem" $THE_USER
   run_command_as $THE_USER "echo -e '"'export GEM_PATH=$GEM_PATH:$HOME/.gem\nexport PATH=$PATH:$HOME/.gem/bin'"' > $USER_HOME/.bashrc"
-  run_command_as $THE_USER "echo -e '"'if [ -f ~/.bashrc ]; then\n\t. ~/.bashrc\nfi'"' > $USER_HOME/.ssh/rc"
-}
-
-function authorize_key {
-  if [ "$PUB_KEY" == "" ]; then
-    echo "No public key provided"
-  else
-    THE_USER=$1
-
-    SSH_FOLDER="/home/$THE_USER/.ssh"
-    create_dir $SSH_FOLDER $THE_USER "700"
-
-    KEYS_FILE="$SSH_FOLDER/authorized_keys"
-    run_command_as $THE_USER "echo '$PUB_KEY' > $KEYS_FILE"
-    run_command_as $THE_USER "chmod 600 $KEYS_FILE"
-  fi
 }
 
 function create_user {
@@ -118,9 +103,22 @@ function create_user {
 
   echo "Configuring user '$THE_USER'..."
   create_dir "/home/$THE_USER" $THE_USER
-  authorize_key $THE_USER
   configure_gems_dir $THE_USER
   echo "Done creating user '$THE_USER'"
+}
+
+function authorize_key {
+  echo "Authorizing provided key..."
+  THE_USER=$1
+  REMOTE_USER_KEY=$2
+
+  SSH_FOLDER="/home/$THE_USER/.ssh"
+  create_dir $SSH_FOLDER $THE_USER "700"
+
+  KEYS_FILE="$SSH_FOLDER/authorized_keys"
+  run_command_as $THE_USER "echo '$REMOTE_USER_KEY' > $KEYS_FILE"
+  run_command_as $THE_USER "chmod 600 $KEYS_FILE"
+  echo "Done authorizing provided key."
 }
 
 function create_deploy_dir  {
@@ -135,16 +133,35 @@ function create_log_dir  {
   echo "Done creating log directory."
 }
 
+function verify_parameters {
+  if [ -z "$APP_ENV" ]; then
+    echo "Please set the app environment using the 'APP_ENV' environment variable."
+    exit 1
+  fi
+
+  if [ -z "$KEY_TO_AUTHORIZE" ]; then
+    echo "Plese set the public key that will be used to authorize remote access using the 'KEY_TO_AUTHORIZE' environment variable."
+  fi
+}
+
+# main
 echo "Configuring app server..."
+
+OD4D_USER="od4d"
+verify_parameters
+
 add_new_repositories_to_apt
 install_security_updates
 install_requirements
 install_java
 install_ruby
 install_web_server
-configure_web_server
-create_user "od4d"
-create_deploy_dir "od4d"
-create_log_dir "od4d"
+configure_web_server $APP_ENV
+create_user $OD4D_USER
+authorize_key $OD4D_USER "$KEY_TO_AUTHORIZE"
+create_deploy_dir $OD4D_USER
+create_log_dir $OD4D_USER
 restart_web_server
+
 echo "Done configuring app server."
+# end main

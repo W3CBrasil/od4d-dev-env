@@ -43,11 +43,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     node.vm.network 'forwarded_port', guest: 80, host: 10080
 
     id_rsa_ssh_key_pub = File.read(File.join(Dir.home, ".ssh", "id_rsa.pub"))
-    node.vm.provision :shell do |s|
-      s.path = "app-server-scripts/bootstrap.sh"
-      s.args = "\"#{id_rsa_ssh_key_pub}\""
-      s.privileged = false
-    end
+    config.vm.provision :shell, :privileged => false, :inline => <<-eos
+      export APP_ENV="test"
+      export KEY_TO_AUTHORIZE="#{id_rsa_ssh_key_pub}"
+      /vagrant/app-server-scripts/bootstrap.sh
+    eos
 
     node.vm.provider "virtualbox" do |vb|
       vb.name = "od4d-app-server"
