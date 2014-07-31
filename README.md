@@ -80,7 +80,7 @@ To create a new server for staging or production you just need to follow these s
 
 * Copy the directory app-server-scripts to '/tmp' in the server
 
-* Execute the commands from the server:
+* Execute the commands from the server as root:
 
 		$ cd /tmp/app-server-scripts
 		$ export APP_ENV="{replace-this-with-the-environment-name}"
