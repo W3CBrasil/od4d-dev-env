@@ -12,7 +12,7 @@ For more information about the project go to the main repository at [OD4D](https
 * [VirtualBox](https://www.virtualbox.org)
 * [Vagrant](http://www.vagrantup.com/)
 
-### Configuring environment:
+### Set up the development environment:
 
 * Clone this repository
 
@@ -53,6 +53,22 @@ For more information about the project go to the main repository at [OD4D](https
 		
 * Now you will be able to access the web app in your browser using the url [http://localhost:3000](http://localhost:3000)
 
+
+### Set up the test environment:
+
+In the set up of the development environment two virtual machines were create. One of the machines is the test environment. The goal of the test environment is to have an environment that simulates staging/production locally.
+
+To set up the test environment for the first time follow the steps below:
+
+	$ vagrant ssh # if you are not logged in the development machine yet
+	$ cd /project/sematic-repository
+	$ rake deploy:test
+	$ cd /project/rss-to-turtle
+	$ rake deploy:test
+	$ cd /project/od4d.org
+	$ rake deploy:test
+	
+Now you will be able to access the web app in your browser using the url [http://10.0.0.3](http://10.0.0.3)
 
 ## Licence
 
