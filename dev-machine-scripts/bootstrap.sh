@@ -10,9 +10,13 @@ sudo apt-get install -y python-software-properties
 sudo add-apt-repository -y ppa:brightbox/ruby-ng
 sudo apt-get update -y
 
-sudo apt-get install -y vim curl git postgresql-9.3 postgresql-contrib-9.3 libpq-dev
+sudo apt-get install -y vim curl git
 
 sudo ln -s $SRC_FOLDER $PROJECT_FOLDER
+
+echo "========================= POSTGRESQL ==============================="
+sudo /vagrant/dev-machine-scripts/postgresql.sh
+echo "========================= POSTGRESQL ==============================="
 
 # Configures Bundler with the proper path to the PG_CONFIG file (PostgreSQL)
 bundle config build.pg --with-pg-config=/usr/bin/pg_config
