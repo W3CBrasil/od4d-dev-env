@@ -10,7 +10,7 @@ sudo apt-get install -y python-software-properties
 sudo add-apt-repository -y ppa:brightbox/ruby-ng
 sudo apt-get update -y
 
-sudo apt-get install -y vim curl git
+sudo apt-get install -y vim curl git libpq-dev
 
 sudo ln -s $SRC_FOLDER $PROJECT_FOLDER
 
