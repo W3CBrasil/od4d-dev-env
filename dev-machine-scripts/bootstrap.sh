@@ -16,6 +16,7 @@ sudo ln -s $SRC_FOLDER $PROJECT_FOLDER
 
 echo "========================= POSTGRESQL ==============================="
 sudo /vagrant/dev-machine-scripts/postgresql.sh
+sudo apt-get install -y libpq-dev
 echo "========================= POSTGRESQL ==============================="
 
 # Configures Bundler with the proper path to the PG_CONFIG file (PostgreSQL)

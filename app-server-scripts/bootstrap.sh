@@ -171,5 +171,10 @@ create_deploy_dir $OD4D_USER
 create_log_dir $OD4D_USER
 restart_web_server
 
+echo "========================= POSTGRESQL ==============================="
+sudo /vagrant/app-server-scripts/postgresql.sh
+sudo apt-get install -y libpq-dev
+echo "========================= POSTGRESQL ==============================="
+
 echo "Done configuring app server."
 # end main
