@@ -25,10 +25,6 @@ if [ ! -e "$REPOSITORIES_FOLDER/semantic-repository" ]; then
   git clone git@github.com:W3CBrasil/od4d-semantic-repository.git semantic-repository
 fi
 
-if [ ! -e "$REPOSITORIES_FOLDER/db-converter" ]; then
-  git clone git@github.com:W3CBrasil/od4d-db-converter.git db-converter
-fi
-
 popd &> /dev/null
 
 echo "Done dowloading repositories."
