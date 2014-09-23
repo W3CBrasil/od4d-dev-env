@@ -33,6 +33,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     node.vm.provider "virtualbox" do |vb|
       vb.name = "od4d-dev-env"
+      vb.customize ["modifyvm", :id, "--memory", "2048"]
     end
   end
 
