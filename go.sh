@@ -10,19 +10,19 @@ echo "Downloading missing repositories..."
 pushd $REPOSITORIES_FOLDER &> /dev/null
 
 if [ ! -e "$REPOSITORIES_FOLDER/OD4D" ]; then
-  git clone git@github.com:W3CBrasil/OD4D
+  git clone https://github.com/W3CBrasil/OD4D.git
 fi
 
 if [ ! -e "$REPOSITORIES_FOLDER/od4d.org" ]; then
-  git clone git@github.com:W3CBrasil/od4d.org.git
+  git clone https://github.com/W3CBrasil/od4d.org.git
 fi
 
 if [ ! -e "$REPOSITORIES_FOLDER/rss-to-turtle" ]; then
-  git clone git@github.com:W3CBrasil/od4d-rss-to-turtle.git rss-to-turtle
+  git clone https://github.com/W3CBrasil/od4d-rss-to-turtle.git rss-to-turtle
 fi
 
 if [ ! -e "$REPOSITORIES_FOLDER/semantic-repository" ]; then
-  git clone git@github.com:W3CBrasil/od4d-semantic-repository.git semantic-repository
+  git clone https://github.com/W3CBrasil/od4d-semantic-repository.git semantic-repository
 fi
 
 if [ ! -e "$REPOSITORIES_FOLDER/rss-to-cms" ]; then
